@@ -7,6 +7,7 @@ package smbios
 import (
 	"fmt"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/digitalocean/go-smbios/smbios"
 )
@@ -109,6 +110,11 @@ func get(s *smbios.Structure, i int) string {
 	unknown := "Unknown"
 
 	if i >= len(s.Strings) {
+		return unknown
+	}
+
+	// Do not pass on invalid UTF8 strings as this can blow up grpc
+	if !utf8.ValidString(s.Strings[i]) {
 		return unknown
 	}
 
